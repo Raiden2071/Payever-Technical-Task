@@ -9,17 +9,17 @@ export class AppointmentService {
 
   appointments = this.appointmentsSignal.asReadonly();
 
-  addAppointment(appointment: Appointment) {
-    this.appointmentsSignal.update(apps => [...apps, appointment]);
+  addAppointment(appointment: Appointment): void {
+    this.appointmentsSignal.update(appointments => [...appointments, appointment]);
   }
 
-  removeAppointment(id: string) {
-    this.appointmentsSignal.update(apps => apps.filter(a => a.id !== id));
+  removeAppointment(id: string): void {
+    this.appointmentsSignal.update(appointments => appointments.filter(appointment => appointment.id !== id));
   }
 
-  updateAppointment(updated: Appointment) {
-    this.appointmentsSignal.update(apps =>
-      apps.map(a => (a.id === updated.id ? updated : a))
+  updateAppointment(updated: Appointment): void {
+    this.appointmentsSignal.update(appointments =>
+      appointments.map(appointment => (appointment.id === updated.id ? updated : appointment))
     );
   }
 } 

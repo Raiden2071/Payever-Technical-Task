@@ -10,6 +10,11 @@ import { MatButtonModule } from '@angular/material/button';
 import { Appointment } from '../models/appointment.model';
 import { inject } from '@angular/core';
 
+export enum AppointmentDialogType {
+  NEW = 'New Appointment',
+  EDIT = 'Edit Appointment'
+}
+
 export interface AppointmentDialogData {
   appointment?: Appointment;
   date?: Date;
@@ -17,7 +22,6 @@ export interface AppointmentDialogData {
 
 @Component({
   selector: 'app-appointment-modal',
-  standalone: true,
   imports: [
     CommonModule,
     ReactiveFormsModule,
@@ -41,7 +45,7 @@ export class AppointmentModalComponent implements OnInit {
   dialogTitle!: string;
 
   ngOnInit(): void {
-    this.dialogTitle = this.data.appointment ? 'Edit Appointment' : 'New Appointment';
+    this.dialogTitle = this.data.appointment ? AppointmentDialogType.EDIT : AppointmentDialogType.NEW;
     
     this.appointmentForm = this.fb.group({
       id: [this.data.appointment?.id || Date.now().toString()],

@@ -5,16 +5,16 @@
       <mat-form-field appearance="fill">
         <mat-label>View</mat-label>
         <mat-select [(ngModel)]="viewMode" (selectionChange)="onViewModeChange()">
-          <mat-option value="week">Week</mat-option>
-          <mat-option value="month">Month</mat-option>
+          <mat-option [value]="CalendarViewMode.WEEK">Week</mat-option>
+          <mat-option [value]="CalendarViewMode.MONTH">Month</mat-option>
         </mat-select>
       </mat-form-field>
     </div>
   </div>
   
-  <div class="calendar" [ngClass]="{'month-view': viewMode === 'month'}">
+  <div class="calendar" [ngClass]="{'month-view': viewMode === CalendarViewMode.MONTH}">
     @for (date of dates; track date.getTime()) {
-      <div class="date-column" [ngClass]="{'month-column': viewMode === 'month'}" 
+      <div class="date-column" [ngClass]="{'month-column': viewMode === CalendarViewMode.MONTH}" 
            (mouseenter)="setHoveredDate(date)" 
            (mouseleave)="setHoveredDate(null)">
         <div class="date-header">

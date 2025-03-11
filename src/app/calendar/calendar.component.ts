@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
 import { AppointmentService } from '../services/appointment.service';
 import { Appointment } from '../models/appointment.model';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -10,16 +10,17 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppointmentModalComponent, AppointmentDialogData } from '../appointment-modal/appointment-modal.component';
 import { ConfirmDeleteModalComponent, ConfirmDeleteDialogData } from '../confirm-delete-modal/confirm-delete-modal.component';
 
-export type CalendarViewMode = 'week' | 'month';
+export enum CalendarViewMode {
+  WEEK = 'week',
+  MONTH = 'month'
+}
 
 @Component({
   selector: 'app-calendar',
-  standalone: true,
   imports: [
     CommonModule, 
     DragDropModule, 
@@ -35,10 +36,12 @@ export type CalendarViewMode = 'week' | 'month';
 })
 export class CalendarComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
-  private router = inject(Router);
   private dialog = inject(MatDialog);
+  private destroyRef = inject(DestroyRef);
 
-  viewMode: CalendarViewMode = 'week';
+  CalendarViewMode = CalendarViewMode;
+  
+  viewMode: CalendarViewMode = CalendarViewMode.WEEK;
   dates: Date[] = [];
   appointments = this.appointmentService.appointments;
   connectedLists: string[] = [];
@@ -50,7 +53,7 @@ export class CalendarComponent implements OnInit {
   }
 
   generateDates(): Date[] {
-    if (this.viewMode === 'week') {
+    if (this.viewMode === CalendarViewMode.WEEK) {
       return this.generateWeekDates();
     } else {
       return this.generateMonthDates();
@@ -94,7 +97,7 @@ export class CalendarComponent implements OnInit {
   }
 
   updateConnectedLists(): void {
-    this.connectedLists = this.dates.map(date => `date-${date.getTime()}`);
+    this.connectedLists = this.dates.map((date: Date) => `date-${date.getTime()}`);
   }
 
   getDropListId(date: Date): string {
@@ -102,7 +105,7 @@ export class CalendarComponent implements OnInit {
   }
 
   getAppointmentsForDate(date: Date): Appointment[] {
-    return this.appointments().filter(a => this.isSameDay(new Date(a.date), date));
+    return this.appointments().filter(appointment => this.isSameDay(new Date(appointment.date), date));
   }
 
   isSameDay(date1: Date, date2: Date): boolean {
@@ -154,8 +157,8 @@ export class CalendarComponent implements OnInit {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntilDestroyed())
-      .subscribe(result => {
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: Appointment | undefined) => {
         if (result) {
           if (appointment) {
             this.appointmentService.updateAppointment(result);
@@ -177,23 +180,23 @@ export class CalendarComponent implements OnInit {
     });
 
     dialogRef.afterClosed()
-      .pipe(takeUntilDestroyed())
-      .subscribe(result => {
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((result: Appointment | undefined) => {
         if (result) {
-          this.appointmentService.removeAppointment(appointment.id);
+          this.appointmentService.removeAppointment(result.id);
         }
       });
   }
 
   editAppointment(id: string): void {
-    const appointment = this.appointments().find(a => a.id === id);
+    const appointment = this.appointments().find(appointment => appointment.id === id);
     if (appointment) {
       this.openAppointmentDialog(appointment);
     }
   }
 
   deleteAppointment(id: string): void {
-    const appointment = this.appointments().find(a => a.id === id);
+    const appointment = this.appointments().find(appointment => appointment.id === id);
     if (appointment) {
       this.openDeleteConfirmDialog(appointment);
     }
