@@ -14,8 +14,19 @@
   
   <div class="calendar" [ngClass]="{'month-view': viewMode === 'month'}">
     @for (date of dates; track date.getTime()) {
-      <div class="date-column" [ngClass]="{'month-column': viewMode === 'month'}">
-        <h3>{{ date | date:'EEE, MMM d' }}</h3>
+      <div class="date-column" [ngClass]="{'month-column': viewMode === 'month'}" 
+           (mouseenter)="setHoveredDate(date)" 
+           (mouseleave)="setHoveredDate(null)">
+        <div class="date-header">
+          <h3>{{ date | date:'EEE, MMM d' }}</h3>
+          <button *ngIf="hoveredDate === date" 
+                  mat-mini-fab 
+                  color="accent" 
+                  class="add-button"
+                  (click)="openAppointmentDialog(undefined, date)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
         <div 
           class="appointment-list" 
           cdkDropList 

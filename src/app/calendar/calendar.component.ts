@@ -1,4 +1,4 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { AppointmentService } from '../services/appointment.service';
 import { Appointment } from '../models/appointment.model';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -8,8 +8,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
+import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AppointmentModalComponent, AppointmentDialogData } from '../appointment-modal/appointment-modal.component';
+import { ConfirmDeleteModalComponent, ConfirmDeleteDialogData } from '../confirm-delete-modal/confirm-delete-modal.component';
 
 export type CalendarViewMode = 'week' | 'month';
 
@@ -29,16 +32,19 @@ export type CalendarViewMode = 'week' | 'month';
   styleUrls: ['./calendar.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CalendarComponent {
+export class CalendarComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
   private router = inject(Router);
+  private dialog = inject(MatDialog);
 
   viewMode: CalendarViewMode = 'week';
-  dates = this.generateDates();
+  dates: Date[] = [];
   appointments = this.appointmentService.appointments;
   connectedLists: string[] = [];
+  hoveredDate: Date | null = null;
 
-  constructor() {
+  ngOnInit(): void {
+    this.dates = this.generateDates();
     this.updateConnectedLists();
   }
 
@@ -131,11 +137,60 @@ export class CalendarComponent {
     }
   }
 
-  editAppointment(id: string) {
-    this.router.navigate(['/appointment', id]);
+  setHoveredDate(date: Date | null): void {
+    this.hoveredDate = date;
   }
 
-  deleteAppointment(id: string) {
-    this.appointmentService.removeAppointment(id);
+  openAppointmentDialog(appointment?: Appointment, date?: Date): void {
+    const dialogData: AppointmentDialogData = {
+      appointment,
+      date: date || new Date()
+    };
+
+    const dialogRef = this.dialog.open(AppointmentModalComponent, {
+      width: '500px',
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        if (appointment) {
+          this.appointmentService.updateAppointment(result);
+        } else {
+          this.appointmentService.addAppointment(result);
+        }
+      }
+    });
+  }
+
+  openDeleteConfirmDialog(appointment: Appointment): void {
+    const dialogData: ConfirmDeleteDialogData = {
+      appointment
+    };
+
+    const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
+      width: '400px',
+      data: dialogData
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.appointmentService.removeAppointment(appointment.id);
+      }
+    });
+  }
+
+  editAppointment(id: string): void {
+    const appointment = this.appointments().find(a => a.id === id);
+    if (appointment) {
+      this.openAppointmentDialog(appointment);
+    }
+  }
+
+  deleteAppointment(id: string): void {
+    const appointment = this.appointments().find(a => a.id === id);
+    if (appointment) {
+      this.openDeleteConfirmDialog(appointment);
+    }
   }
 } 
