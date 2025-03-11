@@ -1,0 +1,53 @@
+<div class="calendar-container">
+  <div class="calendar-header">
+    <h1>Appointment Calendar</h1>
+    <div class="view-selector">
+      <mat-form-field appearance="fill">
+        <mat-label>View</mat-label>
+        <mat-select [(ngModel)]="viewMode" (selectionChange)="onViewModeChange()">
+          <mat-option [value]="CalendarViewMode.WEEK">Week</mat-option>
+          <mat-option [value]="CalendarViewMode.MONTH">Month</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  
+  <div class="calendar" [ngClass]="{'month-view': viewMode === CalendarViewMode.MONTH}">
+    @for (date of dates; track date.getTime()) {
+      <div class="date-column" [ngClass]="{'month-column': viewMode === CalendarViewMode.MONTH}" 
+           (mouseenter)="setHoveredDate(date)" 
+           (mouseleave)="setHoveredDate(null)">
+        <div class="date-header">
+          <h3>{{ date | date:'EEE, MMM d' }}</h3>
+          <button *ngIf="hoveredDate === date" 
+                  mat-mini-fab 
+                  color="accent" 
+                  class="add-button"
+                  (click)="openAppointmentDialog(undefined, date)">
+            <mat-icon>add</mat-icon>
+          </button>
+        </div>
+        <div 
+          class="appointment-list" 
+          cdkDropList 
+          [cdkDropListData]="getAppointmentsForDate(date)"
+          (cdkDropListDropped)="drop($event, date)"
+          [id]="getDropListId(date)"
+          [cdkDropListConnectedTo]="connectedLists">
+          
+          @if (getAppointmentsForDate(date).length === 0) {
+            <div class="empty-day">No appointments</div>
+          }
+          
+          @for (appointment of getAppointmentsForDate(date); track appointment.id) {
+            <app-appointment-card
+              [appointment]="appointment"
+              (edit)="editAppointment($event)"
+              (delete)="deleteAppointment($event)">
+            </app-appointment-card>
+          }
+        </div>
+      </div>
+    }
+  </div>
+</div> 
