@@ -11,6 +11,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppointmentModalComponent, AppointmentDialogData } from '../appointment-modal/appointment-modal.component';
 import { ConfirmDeleteModalComponent, ConfirmDeleteDialogData } from '../confirm-delete-modal/confirm-delete-modal.component';
 
@@ -152,15 +153,17 @@ export class CalendarComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        if (appointment) {
-          this.appointmentService.updateAppointment(result);
-        } else {
-          this.appointmentService.addAppointment(result);
+    dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed())
+      .subscribe(result => {
+        if (result) {
+          if (appointment) {
+            this.appointmentService.updateAppointment(result);
+          } else {
+            this.appointmentService.addAppointment(result);
+          }
         }
-      }
-    });
+      });
   }
 
   openDeleteConfirmDialog(appointment: Appointment): void {
@@ -173,11 +176,13 @@ export class CalendarComponent implements OnInit {
       data: dialogData
     });
 
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.appointmentService.removeAppointment(appointment.id);
-      }
-    });
+    dialogRef.afterClosed()
+      .pipe(takeUntilDestroyed())
+      .subscribe(result => {
+        if (result) {
+          this.appointmentService.removeAppointment(appointment.id);
+        }
+      });
   }
 
   editAppointment(id: string): void {
