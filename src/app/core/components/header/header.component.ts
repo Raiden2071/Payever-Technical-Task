@@ -5,9 +5,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDialog } from '@angular/material/dialog';
 
-import { AppointmentModalComponent } from '../appointment-modal/appointment-modal.component';
-import { AppointmentService } from '../services/appointment.service';
-import { Appointment } from '../models/appointment.model';
+import { AppointmentModalComponent } from '../../../shared/dialogs/appointment-modal/appointment-modal.component';
+import { AppointmentService } from '../../../core/services/appointment.service';
+import { Appointment } from '../../../core/models/appointment.model';
 
 @Component({
   selector: 'app-header',

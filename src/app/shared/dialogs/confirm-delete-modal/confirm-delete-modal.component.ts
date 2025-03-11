@@ -1,7 +1,7 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
-import { Appointment } from '../models/appointment.model';
+import { Appointment } from '../../../core/models/appointment.model';
 
 export enum ConfirmDeleteDialogType {
   TITLE = 'Confirm Delete'

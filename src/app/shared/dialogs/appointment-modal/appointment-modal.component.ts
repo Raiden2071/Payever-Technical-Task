@@ -5,9 +5,9 @@ import { CommonModule } from '@angular/common';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDatepickerModule } from '@angular/material/datepicker';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, provideNativeDateAdapter } from '@angular/material/core';
 import { MatButtonModule } from '@angular/material/button';
-import { Appointment } from '../models/appointment.model';
+import { Appointment } from '../../../core/models/appointment.model';
 import { inject } from '@angular/core';
 
 export enum AppointmentDialogType {
@@ -34,7 +34,8 @@ export interface AppointmentDialogData {
   ],
   templateUrl: './appointment-modal.component.html',
   styleUrls: ['./appointment-modal.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [provideNativeDateAdapter()],
 })
 export class AppointmentModalComponent implements OnInit {
   private fb = inject(FormBuilder);

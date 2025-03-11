@@ -1,6 +1,6 @@
 import { Component, inject, OnInit, ChangeDetectionStrategy, DestroyRef } from '@angular/core';
-import { AppointmentService } from '../services/appointment.service';
-import { Appointment } from '../models/appointment.model';
+import { AppointmentService } from '../../core/services/appointment.service';
+import { Appointment } from '../../core/models/appointment.model';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
@@ -11,8 +11,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AppointmentModalComponent, AppointmentDialogData } from '../appointment-modal/appointment-modal.component';
-import { ConfirmDeleteModalComponent, ConfirmDeleteDialogData } from '../confirm-delete-modal/confirm-delete-modal.component';
+import { AppointmentModalComponent, AppointmentDialogData } from '../../shared/dialogs/appointment-modal/appointment-modal.component';
+import { ConfirmDeleteModalComponent, ConfirmDeleteDialogData } from '../../shared/dialogs/confirm-delete-modal/confirm-delete-modal.component';
 
 export enum CalendarViewMode {
   WEEK = 'week',

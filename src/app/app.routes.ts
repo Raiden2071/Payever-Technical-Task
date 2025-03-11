@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { LayoutComponent } from './layout/layout.component';
+import { LayoutComponent } from './core/components/layout/layout.component';
 
 export const routes: Routes = [
   {
@@ -8,7 +8,7 @@ export const routes: Routes = [
     children: [
       {
         path: 'calendar',
-        loadComponent: () => import('./calendar/calendar.component').then(m => m.CalendarComponent)
+        loadComponent: () => import('./features/calendar/calendar.component').then(m => m.CalendarComponent)
       },
       { path: '', redirectTo: '/calendar', pathMatch: 'full' }
     ]
