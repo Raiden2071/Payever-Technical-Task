@@ -23,7 +23,7 @@
                   mat-mini-fab 
                   color="accent" 
                   class="add-button"
-                  (click)="openAppointmentDialog(undefined, date)">
+                  (click)="dialogService.openAppointmentDialog(undefined, date)">
             <mat-icon>add</mat-icon>
           </button>
         </div>
@@ -42,8 +42,8 @@
           @for (appointment of getAppointmentsForDate(date); track appointment.id) {
             <app-appointment-card
               [appointment]="appointment"
-              (edit)="editAppointment($event)"
-              (delete)="deleteAppointment($event)">
+              (edit)="editAppointment(appointment.id)"
+              (delete)="deleteAppointment(appointment.id)">
             </app-appointment-card>
           }
         </div>

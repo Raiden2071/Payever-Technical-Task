@@ -83,6 +83,11 @@ h3 {
   max-height: 300px;
 }
 
+.appointment-card {
+  margin-bottom: 12px;
+  cursor: move;
+}
+
 .month-column .appointment-card {
   margin-bottom: 8px;
 }
@@ -96,6 +101,11 @@ h3 {
   padding: 20px;
   color: #757575;
   font-style: italic;
+}
+
+mat-card-actions {
+  display: flex;
+  justify-content: space-between;
 }
 
 .cdk-drag-preview {
