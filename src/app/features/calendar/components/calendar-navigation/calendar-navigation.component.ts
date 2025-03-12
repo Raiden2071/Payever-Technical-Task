@@ -4,12 +4,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+
 import { CalendarDateService } from '../../services/calendar-date.service';
 import { CalendarViewMode } from '../../../../core/models/enums/calendar.enum';
 
 @Component({
   selector: 'app-calendar-navigation',
-  standalone: true,
   imports: [
     CommonModule,
     MatButtonModule,
@@ -45,4 +45,4 @@ export class CalendarNavigationComponent {
   navigateToNext(): void {
     this.calendarDateService.navigateToNext();
   }
-} 
+}

@@ -1,10 +1,11 @@
 import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
-import { Appointment } from '../../../../core/models/appointment.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { CommonModule } from '@angular/common';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+
+import { Appointment } from '../../../../core/models/appointment.model';
 import { CALENDAR_CONSTANTS } from '../../../../core/models/constants/calendar.constants';
 
 @Component({

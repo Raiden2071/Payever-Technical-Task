@@ -1,11 +1,13 @@
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { DestroyRef, inject, Injectable } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
+
+import { ConfirmDeleteDialogData, ConfirmDeleteModalComponent } from '../../shared/dialogs/confirm-delete-modal/confirm-delete-modal.component';
 import { AppointmentModalComponent } from '../../shared/dialogs/appointment-modal/appointment-modal.component';
 import { AppointmentDialogData } from '../../shared/dialogs/appointment-modal/appointment-modal.component';
 import { Appointment } from '../models/appointment.model';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { AppointmentService } from './appointment.service';
-import { ConfirmDeleteDialogData, ConfirmDeleteModalComponent } from '../../shared/dialogs/confirm-delete-modal/confirm-delete-modal.component';
+import { CALENDAR_CONSTANTS } from '../models/constants/calendar.constants';
 
 @Injectable({
   providedIn: 'root'
@@ -22,8 +24,7 @@ export class DialogService {
     };
 
     const dialogRef = this.dialog.open(AppointmentModalComponent, {
-      width: '500px',
-      data: dialogData
+      data: dialogData,
     });
 
     dialogRef.afterClosed()
@@ -45,7 +46,7 @@ export class DialogService {
     };
 
     const dialogRef = this.dialog.open(ConfirmDeleteModalComponent, {
-      width: '400px',
+      width: CALENDAR_CONSTANTS.DIALOG.DELETE_WIDTH,
       data: dialogData
     });
 

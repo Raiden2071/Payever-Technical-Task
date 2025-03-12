@@ -7,7 +7,7 @@ import { Appointment } from '../../core/models/appointment.model';
 export class AppointmentService {
   private appointmentsSignal = signal<Appointment[]>([]);
 
-  appointments = this.appointmentsSignal.asReadonly();
+  readonly appointments = this.appointmentsSignal.asReadonly();
 
   addAppointment(appointment: Appointment): void {
     this.appointmentsSignal.update(appointments => [...appointments, appointment]);

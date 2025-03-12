@@ -70,43 +70,4 @@ export class CalendarDateService {
     const connectedLists = this.dates().map((date: Date) => this.calendarService.getDropListId(date));
     this.connectedListsSignal.set(connectedLists);
   }
-
-  // private getAllPossibleDates(): Date[] {
-  //   const allDates: Date[] = [];
-  //   const currentDate = this.currentDateSignal();
-    
-  //   for (let monthOffset = -6; monthOffset <= 6; monthOffset++) {
-  //     const dateForMonth = new Date(currentDate);
-  //     dateForMonth.setMonth(currentDate.getMonth() + monthOffset);
-      
-  //     if (this.viewModeSignal() === CalendarViewMode.WEEK) {
-  //       const daysInMonth = new Date(dateForMonth.getFullYear(), dateForMonth.getMonth() + 1, 0).getDate();
-  //       for (let day = 1; day <= daysInMonth; day += 7) {
-  //         const weekDate = new Date(dateForMonth.getFullYear(), dateForMonth.getMonth(), day);
-  //         const weekDates = this.calendarService.generateDates(CalendarViewMode.WEEK, weekDate);
-  //         allDates.push(...weekDates);
-  //       }
-  //     } else {
-  //       const monthDates = this.calendarService.generateDates(CalendarViewMode.MONTH, dateForMonth);
-  //       allDates.push(...monthDates);
-  //     }
-  //   }
-    
-  //   return this.removeDuplicateDates(allDates);
-  // }
-
-  // private removeDuplicateDates(dates: Date[]): Date[] {
-  //   const uniqueDates: Date[] = [];
-  //   const dateStrings = new Set<string>();
-    
-  //   for (const date of dates) {
-  //     const dateString = date.toISOString().split('T')[0];
-  //     if (!dateStrings.has(dateString)) {
-  //       dateStrings.add(dateString);
-  //       uniqueDates.push(date);
-  //     }
-  //   }
-    
-  //   return uniqueDates;
-  // }
 } 
