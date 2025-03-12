@@ -4,7 +4,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
-import { CalendarStateService } from '../../services/calendar-state.service';
+import { CalendarDateService } from '../../services/calendar-date.service';
 import { CalendarViewMode } from '../../../../core/models/enums/calendar.enum';
 
 @Component({
@@ -22,27 +22,27 @@ import { CalendarViewMode } from '../../../../core/models/enums/calendar.enum';
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CalendarNavigationComponent {
-  private calendarState = inject(CalendarStateService);
+  private calendarDateService = inject(CalendarDateService);
   
   readonly CalendarViewMode = CalendarViewMode;
   
-  get viewMode(): CalendarViewMode {
-    return this.calendarState.viewMode;
+  get viewMode() {
+    return this.calendarDateService.viewMode();
   }
   
   set viewMode(mode: CalendarViewMode) {
-    this.calendarState.setViewMode(mode);
+    this.calendarDateService.setViewMode(mode);
   }
   
   navigateToToday(): void {
-    this.calendarState.navigateToToday();
+    this.calendarDateService.navigateToToday();
   }
   
   navigateToPrevious(): void {
-    this.calendarState.navigateToPrevious();
+    this.calendarDateService.navigateToPrevious();
   }
   
   navigateToNext(): void {
-    this.calendarState.navigateToNext();
+    this.calendarDateService.navigateToNext();
   }
 } 

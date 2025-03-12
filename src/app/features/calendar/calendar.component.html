@@ -4,9 +4,9 @@
     <app-calendar-navigation></app-calendar-navigation>
   </div>
   
-  <div class="calendar" [ngClass]="{'month-view': viewMode === CalendarViewMode.MONTH}">
-    @for (date of dates; track date.getTime()) {
-      <div class="date-column" [ngClass]="{'month-column': viewMode === CalendarViewMode.MONTH}" 
+  <div class="calendar" [ngClass]="{'month-view': viewMode() === CalendarViewMode.MONTH}">
+    @for (date of dates(); track date.getTime()) {
+      <div class="date-column" [ngClass]="{'month-column': viewMode() === CalendarViewMode.MONTH}" 
            (mouseenter)="setHoveredDate(date)" 
            (mouseleave)="setHoveredDate(null)">
         <div class="date-header">
@@ -25,7 +25,7 @@
           [cdkDropListData]="getAppointmentsForDate(date)"
           (cdkDropListDropped)="drop($event, date)"
           [id]="getDropListId(date)"
-          [cdkDropListConnectedTo]="connectedLists">
+          [cdkDropListConnectedTo]="connectedLists()">
           
           @if (getAppointmentsForDate(date).length === 0) {
             <div class="empty-day">No appointments</div>
