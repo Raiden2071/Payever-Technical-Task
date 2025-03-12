@@ -11,12 +11,13 @@
            (mouseleave)="setHoveredDate(null)">
         <div class="date-header">
           <h3>{{ date | date:CALENDAR_CONSTANTS.DATE_FORMAT.HEADER }}</h3>
-          <button *ngIf="hoveredDate === date" 
-                  mat-mini-fab 
-                  color="accent" 
-                  class="add-button"
-                  (click)="dialogService.openAppointmentDialog(undefined, date)">
-            <mat-icon>add</mat-icon>
+          <button
+            *ngIf="hoveredDate === date"
+            mat-mini-fab 
+            color="accent" 
+            class="add-button"
+            (click)="dialogService.openAppointmentDialog(undefined, date)">
+              <mat-icon>add</mat-icon>
           </button>
         </div>
         <div 

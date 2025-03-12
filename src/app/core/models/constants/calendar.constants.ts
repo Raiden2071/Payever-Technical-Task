@@ -4,7 +4,7 @@ export const CALENDAR_CONSTANTS = {
   DEFAULT_VIEW_MODE: CalendarViewMode.WEEK,
   DAYS_IN_WEEK: 7,
   DATE_FORMAT: {
-    HEADER: 'EEE, MMM d',
+    HEADER: 'EEE, MMMM d',
     TIME: 'shortTime'
   },
   DIALOG: {

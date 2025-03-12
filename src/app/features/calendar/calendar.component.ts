@@ -1,7 +1,4 @@
 import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
-import { AppointmentService } from '../../core/services/appointment.service';
-import { Appointment } from '../../core/models/appointment.model';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
@@ -9,6 +6,10 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
+
+import { AppointmentService } from '../../core/services/appointment.service';
+import { Appointment } from '../../core/models/appointment.model';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DialogService } from '../../core/services/dialog.service';
 import { AppointmentCardComponent } from './components/appointment-card/appointment-card.component';
 import { CalendarService } from './services/calendar.service';

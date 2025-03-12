@@ -1,4 +1,4 @@
-import { Component, Input, Output, EventEmitter, ChangeDetectionStrategy } from '@angular/core';
+import { Component, ChangeDetectionStrategy, input, output } from '@angular/core';
 import { Appointment } from '../../../../core/models/appointment.model';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
@@ -21,17 +21,17 @@ import { CALENDAR_CONSTANTS } from '../../../../core/models/constants/calendar.c
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppointmentCardComponent {
-  @Input() appointment!: Appointment;
-  @Output() edit = new EventEmitter<string>();
-  @Output() delete = new EventEmitter<string>();
+  appointment = input.required<Appointment>();
+  edit = output<string>();
+  delete = output<string>();
 
   readonly CALENDAR_CONSTANTS = CALENDAR_CONSTANTS;
 
   onEdit(): void {
-    this.edit.emit(this.appointment.id);
+    this.edit.emit(this.appointment().id);
   }
 
   onDelete(): void {
-    this.delete.emit(this.appointment.id);
+    this.delete.emit(this.appointment().id);
   }
 } 
