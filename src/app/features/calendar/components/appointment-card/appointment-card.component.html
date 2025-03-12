@@ -2,7 +2,7 @@
   <mat-card-header>
     <mat-card-title>{{ appointment.title }}</mat-card-title>
     <mat-card-subtitle>
-      {{ appointment.date | date:'shortTime' }}
+      {{ appointment.date | date:CALENDAR_CONSTANTS.DATE_FORMAT.TIME }}
     </mat-card-subtitle>
   </mat-card-header>
   <mat-card-content>

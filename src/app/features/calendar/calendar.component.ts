@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectionStrategy, effect } from '@angular/core';
 import { AppointmentService } from '../../core/services/appointment.service';
 import { Appointment } from '../../core/models/appointment.model';
 import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
@@ -11,11 +11,11 @@ import { MatSelectModule } from '@angular/material/select';
 import { FormsModule } from '@angular/forms';
 import { DialogService } from '../../core/services/dialog.service';
 import { AppointmentCardComponent } from './components/appointment-card/appointment-card.component';
-
-export enum CalendarViewMode {
-  WEEK = 'week',
-  MONTH = 'month'
-}
+import { CalendarService } from './services/calendar.service';
+import { CalendarViewMode } from '../../core/models/enums/calendar.enum';
+import { CALENDAR_CONSTANTS } from '../../core/models/constants/calendar.constants';
+import { CalendarStateService } from './services/calendar-state.service';
+import { CalendarNavigationComponent } from './components/calendar-navigation/calendar-navigation.component';
 
 @Component({
   selector: 'app-calendar',
@@ -28,91 +28,63 @@ export enum CalendarViewMode {
     MatSelectModule,
     FormsModule,
     AppointmentCardComponent,
+    CalendarNavigationComponent,
   ],
   templateUrl: './calendar.component.html',
   styleUrls: ['./calendar.component.scss'],
-  changeDetection: ChangeDetectionStrategy.OnPush
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  providers: [CalendarService, CalendarStateService],
 })
 export class CalendarComponent implements OnInit {
   private appointmentService = inject(AppointmentService);
+  private calendarService = inject(CalendarService);
   public dialogService = inject(DialogService);
+  public calendarState = inject(CalendarStateService);
 
   CalendarViewMode = CalendarViewMode;
+  CALENDAR_CONSTANTS = CALENDAR_CONSTANTS;
   
-  viewMode: CalendarViewMode = CalendarViewMode.WEEK;
-  dates: Date[] = [];
   connectedLists: string[] = [];
+
   hoveredDate: Date | null = null;
 
   get appointments(): Appointment[] {
     return this.appointmentService.appointments();
   }
 
-  ngOnInit(): void {
-    this.dates = this.generateDates();
+  get viewMode(): CalendarViewMode {
+    return this.calendarState.viewMode;
+  }
+
+  set viewMode(mode: CalendarViewMode) {
+    this.calendarState.setViewMode(mode);
     this.updateConnectedLists();
   }
 
-  generateDates(): Date[] {
-    if (this.viewMode === CalendarViewMode.WEEK) {
-      return this.generateWeekDates();
-    } else {
-      return this.generateMonthDates();
-    }
+  get dates(): Date[] {
+    return this.calendarState.dates;
   }
 
-  generateWeekDates(): Date[] {
-    const dates = [];
-    const today = new Date();
-    for (let i = 0; i < 7; i++) {
-      const date = new Date(today);
-      date.setDate(today.getDate() + i);
-      date.setHours(0, 0, 0, 0);
-      dates.push(date);
-    }
-    return dates;
+  constructor() {
+    effect(() => {
+      this.updateConnectedLists();
+    });
   }
 
-  generateMonthDates(): Date[] {
-    const dates = [];
-    const today = new Date();
-    const currentMonth = today.getMonth();
-    const currentYear = today.getFullYear();
-    
-    // Last day of the month
-    const lastDay = new Date(currentYear, currentMonth + 1, 0);
-    
-    // Generate all days in the month
-    for (let i = 1; i <= lastDay.getDate(); i++) {
-      const date = new Date(currentYear, currentMonth, i);
-      date.setHours(0, 0, 0, 0);
-      dates.push(date);
-    }
-    
-    return dates;
-  }
-
-  onViewModeChange(): void {
-    this.dates = this.generateDates();
+  ngOnInit(): void {
     this.updateConnectedLists();
   }
 
   updateConnectedLists(): void {
-    this.connectedLists = this.dates.map((date: Date) => `date-${date.getTime()}`);
+    this.connectedLists = this.dates.map((date: Date) => this.calendarService.getDropListId(date));
   }
 
   getDropListId(date: Date): string {
-    return `date-${date.getTime()}`;
+    return this.calendarService.getDropListId(date);
   }
 
   getAppointmentsForDate(date: Date): Appointment[] {
-    return this.appointments.filter(appointment => this.isSameDay(new Date(appointment.date), date));
-  }
-
-  isSameDay(date1: Date, date2: Date): boolean {
-    return date1.getFullYear() === date2.getFullYear() &&
-           date1.getMonth() === date2.getMonth() &&
-           date1.getDate() === date2.getDate();
+    return this.calendarService.getAppointmentsForDate(this.appointments, date);
   }
 
   drop(event: CdkDragDrop<Appointment[]>, targetDate: Date) {
@@ -139,6 +111,7 @@ export class CalendarComponent implements OnInit {
       };
       
       this.appointmentService.updateAppointment(updatedAppointment);
+      // this.updateConnectedLists();
     }
   }
 
@@ -159,4 +132,4 @@ export class CalendarComponent implements OnInit {
       this.dialogService.openDeleteConfirmDialog(appointment);
     }
   }
-} 
+}

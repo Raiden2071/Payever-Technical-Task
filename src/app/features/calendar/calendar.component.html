@@ -1,15 +1,7 @@
 <div class="calendar-container">
   <div class="calendar-header">
     <h1>Appointment Calendar</h1>
-    <div class="view-selector">
-      <mat-form-field appearance="fill">
-        <mat-label>View</mat-label>
-        <mat-select [(ngModel)]="viewMode" (selectionChange)="onViewModeChange()">
-          <mat-option [value]="CalendarViewMode.WEEK">Week</mat-option>
-          <mat-option [value]="CalendarViewMode.MONTH">Month</mat-option>
-        </mat-select>
-      </mat-form-field>
-    </div>
+    <app-calendar-navigation></app-calendar-navigation>
   </div>
   
   <div class="calendar" [ngClass]="{'month-view': viewMode === CalendarViewMode.MONTH}">
@@ -18,7 +10,7 @@
            (mouseenter)="setHoveredDate(date)" 
            (mouseleave)="setHoveredDate(null)">
         <div class="date-header">
-          <h3>{{ date | date:'EEE, MMM d' }}</h3>
+          <h3>{{ date | date:CALENDAR_CONSTANTS.DATE_FORMAT.HEADER }}</h3>
           <button *ngIf="hoveredDate === date" 
                   mat-mini-fab 
                   color="accent" 
