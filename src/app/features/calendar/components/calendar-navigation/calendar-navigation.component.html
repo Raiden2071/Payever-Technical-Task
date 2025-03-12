@@ -1,0 +1,20 @@
+<div class="calendar-controls">
+  <div class="navigation-controls">
+    <button mat-icon-button (click)="navigateToPrevious()">
+      <mat-icon>chevron_left</mat-icon>
+    </button>
+    <button mat-button (click)="navigateToToday()">Today</button>
+    <button mat-icon-button (click)="navigateToNext()">
+      <mat-icon>chevron_right</mat-icon>
+    </button>
+  </div>
+  <div class="view-selector">
+    <mat-form-field appearance="fill">
+      <mat-label>View</mat-label>
+      <mat-select [(ngModel)]="viewMode">
+        <mat-option [value]="CalendarViewMode.WEEK">Week</mat-option>
+        <mat-option [value]="CalendarViewMode.MONTH">Month</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </div>
+</div>
