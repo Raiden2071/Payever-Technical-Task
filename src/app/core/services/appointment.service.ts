@@ -1,25 +1,29 @@
-import { Injectable, signal } from '@angular/core';
+import { Injectable } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { Appointment } from '../../core/models/appointment.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class AppointmentService {
-  private appointmentsSignal = signal<Appointment[]>([]);
+  private appointmentsSubject$ = new BehaviorSubject<Appointment[]>([]);
 
-  readonly appointments = this.appointmentsSignal.asReadonly();
+  readonly appointments$: Observable<Appointment[]> = this.appointmentsSubject$.asObservable();
 
   addAppointment(appointment: Appointment): void {
-    this.appointmentsSignal.update(appointments => [...appointments, appointment]);
+    const currentAppointments = this.appointmentsSubject$.getValue();
+    this.appointmentsSubject$.next([...currentAppointments, appointment]);
   }
 
   removeAppointment(id: string): void {
-    this.appointmentsSignal.update(appointments => appointments.filter(appointment => appointment.id !== id));
+    const currentAppointments = this.appointmentsSubject$.getValue();
+    this.appointmentsSubject$.next(currentAppointments.filter(appointment => appointment.id !== id));
   }
 
   updateAppointment(updated: Appointment): void {
-    this.appointmentsSignal.update(appointments =>
-      appointments.map(appointment => (appointment.id === updated.id ? updated : appointment))
+    const currentAppointments = this.appointmentsSubject$.getValue();
+    this.appointmentsSubject$.next(
+      currentAppointments.map(appointment => (appointment.id === updated.id ? updated : appointment))
     );
   }
 } 

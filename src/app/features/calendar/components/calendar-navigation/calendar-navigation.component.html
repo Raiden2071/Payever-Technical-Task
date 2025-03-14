@@ -11,7 +11,7 @@
   <div class="view-selector">
     <mat-form-field appearance="fill">
       <mat-label>View</mat-label>
-      <mat-select [(ngModel)]="viewMode">
+      <mat-select [formControl]="viewModeControl">
         <mat-option [value]="CalendarViewMode.WEEK">Week</mat-option>
         <mat-option [value]="CalendarViewMode.MONTH">Month</mat-option>
       </mat-select>

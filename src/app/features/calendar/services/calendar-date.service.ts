@@ -1,4 +1,5 @@
-import { Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { CalendarViewMode } from '../../../core/models/enums/calendar.enum';
 import { CALENDAR_CONSTANTS } from '../../../core/models/constants/calendar.constants';
 import { CalendarService } from './calendar.service';
@@ -7,34 +8,34 @@ import { CalendarService } from './calendar.service';
 export class CalendarDateService {
   private calendarService = inject(CalendarService);
   
-  private currentDateSignal = signal<Date>(new Date());
-  private viewModeSignal = signal<CalendarViewMode>(CALENDAR_CONSTANTS.DEFAULT_VIEW_MODE);
-  private datesSignal = signal<Date[]>([]);
-  public connectedListsSignal = signal<string[]>([]);
+  private currentDateSubject$ = new BehaviorSubject<Date>(new Date());
+  private viewModeSubject$ = new BehaviorSubject<CalendarViewMode>(CALENDAR_CONSTANTS.DEFAULT_VIEW_MODE);
+  private datesSubject$ = new BehaviorSubject<Date[]>([]);
+  private connectedListsSubject$ = new BehaviorSubject<string[]>([]);
 
-  readonly dates = this.datesSignal.asReadonly();
-  readonly connectedLists = this.connectedListsSignal.asReadonly();
-  readonly viewMode = this.viewModeSignal.asReadonly();
+  readonly dates$: Observable<Date[]> = this.datesSubject$.asObservable();
+  readonly connectedLists$: Observable<string[]> = this.connectedListsSubject$.asObservable();
+  readonly viewMode$: Observable<CalendarViewMode> = this.viewModeSubject$.asObservable();
 
   constructor() {
     this.updateDates();
   }
 
   setViewMode(viewMode: CalendarViewMode): void {
-    this.viewModeSignal.set(viewMode);
+    this.viewModeSubject$.next(viewMode);
     this.updateDates();
   }
 
   navigateToToday(): void {
-    this.currentDateSignal.set(new Date());
+    this.currentDateSubject$.next(new Date());
     this.updateDates();
   }
 
   navigateToPrevious(): void {
-    const currentDate = this.currentDateSignal();
-    const newDate = new Date(this.currentDateSignal());
+    const currentDate = this.currentDateSubject$.getValue();
+    const newDate = new Date(currentDate);
     
-    if (this.viewModeSignal() === CalendarViewMode.WEEK) {
+    if (this.viewModeSubject$.getValue() === CalendarViewMode.WEEK) {
       // Move back one week
       newDate.setDate(currentDate.getDate() - CALENDAR_CONSTANTS.DAYS_IN_WEEK);
     } else {
@@ -42,32 +43,36 @@ export class CalendarDateService {
       newDate.setMonth(currentDate.getMonth() - 1);
     }
     
-    this.currentDateSignal.set(newDate);
+    this.currentDateSubject$.next(newDate);
     this.updateDates();
   }
 
   navigateToNext(): void {
-    const currentDate = this.currentDateSignal();
+    const currentDate = this.currentDateSubject$.getValue();
     const newDate = new Date(currentDate);
     
-    if (this.viewModeSignal() === CalendarViewMode.WEEK) {
+    if (this.viewModeSubject$.getValue() === CalendarViewMode.WEEK) {
       newDate.setDate(currentDate.getDate() + CALENDAR_CONSTANTS.DAYS_IN_WEEK);
     } else {
       newDate.setMonth(currentDate.getMonth() + 1);
     }
     
-    this.currentDateSignal.set(newDate);
+    this.currentDateSubject$.next(newDate);
     this.updateDates();
   }
 
   private updateDates(): void {
-    const dates = this.calendarService.generateDates(this.viewModeSignal(), this.currentDateSignal());
-    this.datesSignal.set(dates);
+    const dates = this.calendarService.generateDates(
+      this.viewModeSubject$.getValue(), 
+      this.currentDateSubject$.getValue()
+    );
+    this.datesSubject$.next(dates);
     this.updateConnectedLists();
   }
 
   private updateConnectedLists(): void {
-    const connectedLists = this.dates().map((date: Date) => this.calendarService.getDropListId(date));
-    this.connectedListsSignal.set(connectedLists);
+    const dates = this.datesSubject$.getValue();
+    const connectedLists = dates.map((date: Date) => this.calendarService.getDropListId(date));
+    this.connectedListsSubject$.next(connectedLists);
   }
 } 
