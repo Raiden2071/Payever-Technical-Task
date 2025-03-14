@@ -1,15 +1,16 @@
-import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
+import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
+import { Component, inject, ChangeDetectionStrategy, OnInit, DestroyRef, ChangeDetectorRef } from '@angular/core';
 import { DragDropModule } from '@angular/cdk/drag-drop';
 import { CommonModule } from '@angular/common';
 import { MatCardModule } from '@angular/material/card';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSelectModule } from '@angular/material/select';
-import { FormsModule } from '@angular/forms';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { combineLatest } from 'rxjs';
 
 import { AppointmentService } from '../../core/services/appointment.service';
 import { Appointment } from '../../core/models/appointment.model';
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { DialogService } from '../../core/services/dialog.service';
 import { AppointmentCardComponent } from './components/appointment-card/appointment-card.component';
 import { CalendarService } from './services/calendar.service';
@@ -27,7 +28,6 @@ import { CalendarNavigationComponent } from './components/calendar-navigation/ca
     MatButtonModule,
     MatIconModule,
     MatSelectModule,
-    FormsModule,
     AppointmentCardComponent,
     CalendarNavigationComponent,
   ],
@@ -36,28 +36,48 @@ import { CalendarNavigationComponent } from './components/calendar-navigation/ca
   changeDetection: ChangeDetectionStrategy.OnPush,
   providers: [CalendarService, CalendarDateService],
 })
-export class CalendarComponent {
-  private appointmentService = inject(AppointmentService);
-  private calendarService = inject(CalendarService);
-  public dialogService = inject(DialogService);
-  public calendarDateService = inject(CalendarDateService);
-
-  readonly viewMode = this.calendarDateService.viewMode;
-  readonly appointments = this.appointmentService.appointments;
-  readonly dates = this.calendarDateService.dates;
-  readonly connectedLists = this.calendarDateService.connectedLists;
+export class CalendarComponent implements OnInit {
+  appointmentService = inject(AppointmentService);
+  calendarService = inject(CalendarService);
+  dialogService = inject(DialogService);
+  calendarDateService = inject(CalendarDateService);
+  destroyRef = inject(DestroyRef);
+  cdr = inject(ChangeDetectorRef);
 
   readonly CalendarViewMode = CalendarViewMode;
   readonly CALENDAR_CONSTANTS = CALENDAR_CONSTANTS;
   
+  viewMode: CalendarViewMode = CALENDAR_CONSTANTS.DEFAULT_VIEW_MODE;
+  appointments: Appointment[] = [];
+  dates: Date[] = [];
+  connectedLists: string[] = [];
   hoveredDate: Date | null = null;
+
+  ngOnInit(): void {
+    combineLatest([
+      this.calendarDateService.viewMode$,
+      this.appointmentService.appointments$,
+      this.calendarDateService.dates$,
+      this.calendarDateService.connectedLists$
+    ]).pipe(
+      takeUntilDestroyed(this.destroyRef)
+    ).subscribe(([viewMode, appointments, dates, connectedLists]) => {
+      console.log('combineLatest');
+      this.viewMode = viewMode;
+      this.appointments = appointments;
+      this.dates = dates;
+      this.connectedLists = connectedLists;
+      
+      this.cdr.markForCheck();
+    });
+  }
 
   getDropListId(date: Date): string {
     return this.calendarService.getDropListId(date);
   }
 
-  getAppointmentsForDate(date: Date): Appointment[] {
-    return this.calendarService.getAppointmentsForDate(this.appointments(), date);
+  getAppointmentsForDate(date: Date, appointments: Appointment[]): Appointment[] {
+    return this.calendarService.getAppointmentsForDate(appointments, date);
   }
 
   drop(event: CdkDragDrop<Appointment[]>, targetDate: Date) {
@@ -91,15 +111,15 @@ export class CalendarComponent {
     this.hoveredDate = date;
   }
 
-  editAppointment(id: string): void {
-    const appointment = this.appointments().find(appointment => appointment.id === id);
+  editAppointment(id: string, appointments: Appointment[]): void {
+    const appointment = appointments.find(appointment => appointment.id === id);
     if (appointment) {
       this.dialogService.openAppointmentDialog(appointment);
     }
   }
 
-  deleteAppointment(id: string): void {
-    const appointment = this.appointments().find(appointment => appointment.id === id);
+  deleteAppointment(id: string, appointments: Appointment[]): void {
+    const appointment = appointments.find(appointment => appointment.id === id);
     if (appointment) {
       this.dialogService.openDeleteConfirmDialog(appointment);
     }

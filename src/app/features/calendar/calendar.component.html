@@ -3,44 +3,52 @@
     <h1>Appointment Calendar</h1>
     <app-calendar-navigation></app-calendar-navigation>
   </div>
-  
-  <div class="calendar" [ngClass]="{'month-view': viewMode() === CalendarViewMode.MONTH}">
-    @for (date of dates(); track date.getTime()) {
-      <div class="date-column" [ngClass]="{'month-column': viewMode() === CalendarViewMode.MONTH}" 
-           (mouseenter)="setHoveredDate(date)" 
-           (mouseleave)="setHoveredDate(null)">
+
+  <div
+    class="calendar"
+    [ngClass]="{ 'month-view': viewMode === CalendarViewMode.MONTH }"
+  >
+    @for (date of dates; track date.getTime()) {
+      <div
+        class="date-column"
+        [ngClass]="{ 'month-column': viewMode === CalendarViewMode.MONTH }"
+        (mouseenter)="setHoveredDate(date)"
+        (mouseleave)="setHoveredDate(null)"
+      >
         <div class="date-header">
-          <h3>{{ date | date:CALENDAR_CONSTANTS.DATE_FORMAT.HEADER }}</h3>
+          <h3>{{ date | date : CALENDAR_CONSTANTS.DATE_FORMAT.HEADER }}</h3>
           <button
             *ngIf="hoveredDate === date"
-            mat-mini-fab 
-            color="accent" 
+            mat-mini-fab
+            color="accent"
             class="add-button"
-            (click)="dialogService.openAppointmentDialog(undefined, date)">
-              <mat-icon>add</mat-icon>
+            (click)="dialogService.openAppointmentDialog(undefined, date)"
+          >
+            <mat-icon>add</mat-icon>
           </button>
         </div>
-        <div 
-          class="appointment-list" 
-          cdkDropList 
-          [cdkDropListData]="getAppointmentsForDate(date)"
+        <div
+          class="appointment-list"
+          cdkDropList
+          [cdkDropListData]="getAppointmentsForDate(date, appointments)"
           (cdkDropListDropped)="drop($event, date)"
           [id]="getDropListId(date)"
-          [cdkDropListConnectedTo]="connectedLists()">
-          
-          @if (getAppointmentsForDate(date).length === 0) {
+          [cdkDropListConnectedTo]="connectedLists"
+        >
+          @if (getAppointmentsForDate(date, appointments).length === 0) {
             <div class="empty-day">No appointments</div>
-          }
+          } 
           
-          @for (appointment of getAppointmentsForDate(date); track appointment.id) {
+          @for (appointment of getAppointmentsForDate(date, appointments); track appointment.id) {
             <app-appointment-card
               [appointment]="appointment"
-              (edit)="editAppointment(appointment.id)"
-              (delete)="deleteAppointment(appointment.id)">
+              (edit)="editAppointment(appointment.id, appointments)"
+              (delete)="deleteAppointment(appointment.id, appointments)"
+            >
             </app-appointment-card>
           }
         </div>
       </div>
     }
   </div>
-</div> 
+</div>
